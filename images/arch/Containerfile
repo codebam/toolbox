@@ -1,0 +1,26 @@
+FROM archlinux
+
+ENV NAME=archlinux-toolbox VERSION=latest
+LABEL com.github.containers.toolbox="true" \
+      com.redhat.component="$NAME" \
+      name="$NAME" \
+      version="$VERSION" \
+      usage="This image is meant to be used with the toolbox command" \
+      summary="Base image for creating Arch Linux toolbox containers" \
+      maintainer="Sean Behan <codebam@riseup.net>"
+
+COPY README.md /
+
+RUN pacman -Syu --noconfirm
+
+COPY missing-docs /
+RUN pacman -S --noconfirm - < missing-docs
+RUN rm /missing-docs
+
+COPY extra-packages /
+RUN pacman -S --noconfirm - < extra-packages
+RUN rm /extra-packages
+
+RUN echo '%wheel ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+CMD /bin/ash
